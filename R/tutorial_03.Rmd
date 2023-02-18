@@ -1,0 +1,261 @@
+---
+title: "R을 이용한 텍스트 파일 처리 기초 강의 03"
+# author: '...'
+# date: '2022-12-16'
+output:
+  # html_document:
+  #  toc_float: true
+  #  toc: true
+  #  theme: readable
+  #  highlight: tango
+  #  number_sections: TRUE
+  rmdformats::readthedown:
+    code_folding: show
+    number_sections: false
+    toc_depth: 5
+    fig_caption: yes
+mainfont: D2Coding
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### 3회차에서 다루는 내용
+- 라이브러리(혹은 패키지) 설치 및 로딩
+- 파일 읽고 쓰기
+- 파일 정제하기
+- json 파일 읽고 정제하기
+
+
+### 라이브러리 설치와 구동
+- 패키지(혹은 라이브러리)란 특정한 작업을 특정한 작업을 가능하게 하는 여러 함수들을 미리 정의하고 모아놓은 함수들의 모음집
+- 텍스트 파일을 읽어 처리하고 저장하는 일련의 과정은 R의 내장 함수(1회차에서 소개한 함수들과 같이 R 자체에 내장되어 있는 함수)로 진행하는 것이 가능하나, 특수한 파일을 읽고 처리하거나 보다 복잡한 작업을 할 때에는 외부 라이브러리를 설치하는 것이 필요.
+  - (\* 본 강의에서는 외부 라이브러리의 설치를 최소화하여 내장 함수 중심으로 진행.)
+
+본 강의에서 사용할 외부 패키지는 **_jsonlite_**으로, 모두의 말뭉치 데이터 기본 포맷인 json 파일을 처리할 때 필요한 여러 함수들을 담고 있다.
+
+
+#### 라이브러리 설치
+라이브러리 설치는 두 가지 방법으로 할 수 있다.
+
+- 콘솔창에 **install.packages(<packageName>)** 함수를 입력하거나 (# 기호를 빼고 실행)
+
+```{r}
+# install.packages("jsonlite")
+
+```
+
+- Rstudio 오른쪽 하단 패널에서 Packages 메뉴로 가서 install 버튼 누른 후 검색 후 설치할 수 있다.
+
+  ![](images/install_library.png){width="100%"}
+
+#### 라이브러리 구동
+설치한 라이브러리는 로딩 단계를 거친 후에 사용할 수 있다. 라이브러리의 로딩은 **library(<패키지명>)** 명령을 이용한다.
+
+```{r}
+library(jsonlite)
+
+```
+
+- 설치한 라이브러리에 대한 도움말은 Rstudio 오른쪽 하단 패널의 검색창에 라이브러리 이름을 입력하면 Help 창에 설명이 나타난다. 검색창에는 라이브러리뿐 아니라 개별 함수에 대한 설명 검색도 가능하다.
+
+  ![](images/help_menu.png){width="100%"}
+
+- 보다 다양한 패키지와 패키지 내 함수들에 대한 설명은 RDocumentation(<https://www.rdocumentation.org/>)에서 찾아볼 수 있다.
+
+
+### 텍스트 파일 읽기, 쓰기
+#### 파일 읽기
+디스크에 저장된 파일을 읽을 때는 **readLines()** 함수를 사용한다. 파일을 행 단위로 읽어 문자열 벡터를 만든다.
+
+```{r, attr.source='.numberLines'}
+target_f <- "data/실습파일/실습파일_001.txt"
+txt <- readLines(target_f)
+
+print(txt[1:3])
+```
+
+- 라인 1: 읽을 파일의 위치 경로를 변수 *target_f*에 할당한다. 파일의 경로는 사용하는 시스템마다 다를 수 있으므로, 직접 입력하는 대신 윈도우 탐색기에서 파일의 속성 정보를 열어 위치 경로를 가져오는 방법도 있다. 이 때 파일 경로 구분자가 '**\\**'로 되어 있으면 '**/**'로 바꾸어야 한다. (예: 'C:\\Users\\Administrator' -> 'C:/Users/Administrator')
+- 라인 2: 파일을 읽어 변수 *txt*에 저장한다.
+- 라인 3: *txt*에 저장된 텍스트에서 1행에서 3행까지만(*txt[1:3]*) 출력한다.
+
+만약 텍스트 파일의 크기가 너무 커서 일부 행만 읽어서 내용을 확인하고 싶으면 **readLines()** 함수에 **n** 인자를 부여하면 된다.
+
+```{r, attr.source='.numberLines'}
+target_f <- "data/실습파일/실습파일_001.txt"
+txt <- readLines(target_f, n = 3)
+
+print(txt)
+```
+
+- 라인 2: **n**에 3을 주어 3행까지만 읽게 한다.
+- 라인 3: *txt* 전체를 출력해도 3행까지만 나온다. 
+
+
+#### 파일 쓰기
+변수에 저장된 내용을 디스크에 파일로 쓰고 싶을 때에는 **writeLines()** 함수를 사용한다. 사용 방법은 **readLines()**와 유사하다.
+
+```{r, attr.source='.numberLines'}
+target_f <- "data/실습파일/쓰기_실습파일_001.txt"
+writeLines(text = txt, con = target_f)
+
+filelist <- list.files(path = "data/실습파일", pattern = ".")
+print(filelist)
+```
+
+- 라인 1: 새로 만들 파일의 위치 경로와 파일 이름을 정해 *target_f*에 할당한다.
+- 라인 2: **writeLines()** 함수로 앞서 만든 txt 변수의 내용을 *target_f*에 저장된 위치에 파일로 내보낸다. 내보낼 텍스트는 **text** 인자에, 저장 위치는 **con** 인자에 넣는다.
+- 라인 4: 새로 만든 파일이 원하는 위치에 만들어졌는지 확인하기 위해 그 파일이 저장된 폴더 내의 전체 파일 목록을 가져온다. 특정 폴더 내의 파일 목록을 가져올 때 사용하는 함수가 **list.files()**이다. **path**에는 폴더 경로를, **pattern**에는 파일 검색을 위한 검색 패턴을 넣는다. 모든 파일을 가져올 때는 '.'을 사용한다.
+- 라인 5: 파일 목록을 출력한다. 새로 만든 파일이 7번째에 있음을 알 수 있다.
+
+
+#### 여러 파일 읽기
+동일한 작업을 여러 번 반복할 때 가장 많이 사용하는 구문이 **for** 문이다. **for** 문의 기본 구문은 다음과 같다.
+
+```{r}
+# for ((elem in elements) {
+#  함수(elem): 반복할 내용
+# }
+```
+*elements*에 있는 요소들을 하나씩 가져와서 변수(*elem*)에 넣고, { } 내에서 이 변수를 처리한 후 결과를 반환한다. for 문의 작동을 보여주는 쉬운 예는 다음과 같다. 1에서 10까지의 10개 요소를 하나씩 가져와서 변수 *i*에 할당한 후 { }내에서 그 변수를 출력(**print()**)하는 간단한 예시이다.
+```{r, attr.source='.numberLines'}
+for (i in 1:10){
+  print(i)
+}
+```
+
+- 다음은 위의 예시와 거의 동일하나 변수 *i*를 그냥 출력하지 않고 10을 곱한 후 값을 출력하는 예시이다.
+```{r, attr.source='.numberLines'}
+for (i in 1:10){
+  print(i * 10)
+}
+```
+
+- 다음은 for 문에서 처리한 결과를 변수에 차례대로 할당하는 예시이다.
+```{r}
+nums <- c()
+
+for (i in 1:10){
+  nums <- c(nums, i)
+  print(i)
+}
+
+print(nums)
+```
+- 라인 1: *nums* 변수는 1부터 10까지 숫자를 순차적으로 담기 위한 그릇 역할을 한다. 이러한 빈 변수를 만들 때는 **c()**나 **list()**를 사용한다. **c()**는 담을 값의 구조가 단일 구조일 때, **list()**는 이중 구조일 때 사용한다.
+- 라인 3-6: 1부터 10까지 하나씩 출력하되, 출력하기 전에 그 값을 *nums*라는 변수에 하나씩 추가한다.
+
+
+특정 폴더에 저장된 여러 개의 파일을 한번에 읽을 때는 **list.files()**, **readLines()**, **file.path()**, **for** 문을 사용한다.
+```{r, attr.source='.numberLines'}
+target_dir <- "data/실습파일"
+target_fs <- list.files(path = target_dir, pattern = ".")
+
+all_texts <- list()
+
+for (f in target_fs) {
+  file_path <- file.path(target_dir, f)
+  txt <- readLines(file_path)
+  all_texts[[f]] <- txt
+}
+
+print(length(target_fs)); print(length(all_texts))
+
+```
+- 라인 1: 대상 폴더 경로를 *target_dir*에 할당한다.
+- 라인 2: 주어진 폴더 내의 모든 파일과 하위 폴더 이름을 가져오는 **list.files()** 함수로 target_dir 내의 모든 파일들의 목록을 가져온다. 이 때 특정 파일 이름에 한정하지 않고 전체 파일을 가져오기 위해 **pattern**에 '.' 값을 준다. 목록을 *target_fs*에 저장한다.
+- 라인 4: 전체 파일들을 읽은 결과를 담기 위한 *all_text* 변수를 생성한다. 변수의 타입은 이중 구조를 가진 리스트 타입이다. 하나의 텍스트는 여러 행으로 되어 있고, **readLines()**는 행 단위로 텍스트를 읽어오므로 이러한 이중 구조를 반영하기 위해 리스트 변수를 만든다.
+- 라인 7: **for** 문을 시작한다. 파일 이름 목록인 *target_fs*에서 파일 이름을 하나씩 가져와서 변수 *f*에 할당한다.
+- 라인 8: **file.path(<경로명>, <파일명>)**로 파일 이름과 폴더 경로를 합해서 최종 경로를 만들어 *file_path*에 저장한다.
+- 라인 9: **readLines()**로 파일을 읽어 *txt*에 저장한다.
+- 라인 10: *txt* 변수에 저장된 값을 *all_texts* 변수에 저장한다. [[]]는 리스트의 인덱싱을 위한 것으로, 변수값의 범위를 지정하는 []와 동일한 역할을 한다. 여기서는 파일명을 인덱스값으로 준다.
+- 라인 12: 파일의 개수와 읽은 파일의 개수가 같은지 확인하기 위해 두 변수를 각각 출력한다.
+
+
+읽은 파일들의 내용이 담긴 *all_texts*를 출력하면 다음과 같다. 각 파일의 내용과 파일의 이름(*$regex_practice_text.txt*)이 함께 출력됨을 볼 수 있다.
+```{r}
+print(all_texts)
+```
+
+
+읽은 파일들 중 문자 인코딩이 cp949인 것은 깨진 문자로 보인다. 이 cp949 인코딩 파일을 제외하고 전체 파일을 다시 읽을 수 있다.
+```{r, attr.source='.numberLines'}
+target_dir <- "data/실습파일"
+target_fs <- list.files(path = target_dir, pattern = ".")
+remove_f <- grep(pattern = "cp949", x = target_fs)
+target_fs_1 <- target_fs[-remove_f]
+
+all_texts_1 <- list()
+
+for (f in target_fs_1) {
+  file_path <- file.path(target_dir, f)
+  txt <- readLines(file_path)
+  all_texts_1[[f]] <- txt
+}
+
+```
+
+- 라인 3: 파일 목록 *target_fs*에서 이름에 cp949가 들어있는 파일의 위치를 **grep()**으로 가져온 후 변수 *remove_f*에 할당한다.
+- 라인 4: 전체 파일 목록 *target_fs*에서 제외할 파일의 위치값을 '-'로 나타내어 해당 위치에 있는 파일명을 목록에서 제외한다.
+
+결과를 출력하면 다음과 같다.
+```{r}
+print(all_texts_1)
+```
+
+
+만약 파일별로 구분하지 않고 전체 파일을 읽어 하나의 텍스트로 처리하려면 *all_texts* 변수 타입을 **list()**가 아닌 **c()**로 지정하면 된다.
+```{r, attr.source='.numberLines'}
+target_dir <- "data/실습파일"
+target_fs <- list.files(path = target_dir, pattern = ".")
+remove_f <- grep(pattern = "cp949", x = target_fs)
+target_fs_2 <- target_fs[-remove_f]
+
+all_texts_2 <- c()
+
+for (f in target_fs_2) {
+  file_path <- file.path(target_dir, f)
+  txt <- readLines(file_path)
+  all_texts_2 <- c(all_texts_2, txt)
+}
+```
+- 라인 6: *all_texts_2* 변수 타입을 **c()**로 설정한다.
+- 라인 11: *txt*에 저장된 파일 내용, 즉 행들을 *all_texts_2* 변수에 순차적으로 추가한다.
+
+*all_texts_2*를 일부만 출력하면 다음과 같다.
+```{r}
+print(all_texts_2[1:10])
+```
+
+
+#### 여러 파일을 읽으면서 텍스트 정제 작업하기
+지금까지 배운 함수들을 이용해서 여러 파일들을 읽으면서 동시에 필요한 텍스트 처리 작업을 실행할 수 있다.
+정규식을 이용하여 읽어온 파일들에서 1) 마침표, 물음표, 느낌표, 쉼표 등 4개의 구두점을 제거하고, 2) 괄호 속에 들어있는 문장을 제거하고, 3) 영화 대사에서 등장인물 이름(조커:, Joker: 등)을 제외한 결과를 얻는 방법은 다음과 같다.
+```{r, attr.source='.numberLines'}
+target_dir <- "data/실습파일"
+target_fs <- list.files(path = target_dir, pattern = ".")
+remove_f <- grep(pattern = "cp949", x = target_fs)
+target_fs_3 <- target_fs[-remove_f]
+
+all_texts_3 <- c()
+
+for (f in target_fs_3) {
+  file_path <- file.path(target_dir, f)
+  txt <- readLines(file_path)
+  txt_1 <- gsub(pattern = "\\.|\\!|\\?|,", replacement = "", x = txt) # 마침표, 느낌표, 물음표, 쉼표를 제거
+  txt_1 <- gsub(pattern = "\\(.*\\)", replacement = "", x = txt_1) # 괄호와 괄호 속의 글자 삭제
+  txt_1 <- gsub(pattern = "^.*: ", replacement = "", x = txt_1) # 행의 제일 앞에서 시작하여 : 로 끝나는 곳까지 제거 
+  all_texts_3 <- c(all_texts_3, txt_1)
+}
+
+```
+
+결과를 출력하면 다음과 같다.
+```{r}
+print(all_texts_3[1:20])
+```

@@ -1,0 +1,64 @@
+---
+title: "R을 이용한 말뭉치 자료 전처리 (3회)"
+author: '...'
+date: '2022-07-07'
+output:
+  # html_document:
+  #  toc_float: true
+  #  toc: true
+  #  theme: readable
+  #  highlight: tango
+  #  number_sections: TRUE
+  rmdformats::readthedown:
+    code_folding: show
+    number_sections: false
+    toc_depth: 5
+mainfont: D2Coding
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### 4회차에서 다루는 내용
+- json 파일들을 한번에 처리하기
+
+
+
+여러 파일을 한번에 텍스트 파일로 처리하는 것은 앞에서 다룬 for 문과 함께 사용하면 된다.
+
+```{r}
+target_dir <- "data/모두의말뭉치/국립국어원 문어 말뭉치(버전 1.0)"
+target_fs <- list.files(target_dir, pattern = "json")
+
+for (f in target_fs) {
+  f_name <- file.path(target_dir, f)
+  json <- read_json(f_name)
+  
+  file_id <- json$id
+  file_document <- json$document[[1]]
+  paragraphs <- file_document$paragraph
+
+  ids <- c()
+  sents <- c()
+
+  for (para in paragraphs) {
+    id <- para[[1]]
+    sent <- para[[2]]
+  
+    ids <- c(ids, id)
+    sents <- c(sents, sent)
+  }
+  
+  w_file_name <- paste0(file_id, ".txt")
+  w_file_name <- file.path(target_dir, w_file_name)
+  writeLines(text = sents, con = w_file_name)
+  
+}
+
+```
+
