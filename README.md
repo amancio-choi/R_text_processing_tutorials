@@ -14,7 +14,7 @@
 - tutorial_02: R로 텍스트 파일 읽고 쓰기, 정규식 활용<br>
 [튜토리얼] <https://amancio-choi.github.io/R_Text_processing_tutorials/R/tutorial_02.html><br>
 
-R_tutorial_03: 웹 페이지 스크래핑(scraping) 기초
+- R_tutorial_03: 웹 페이지 스크래핑(scraping) 기초
 [튜토리얼] https://amancio-choi.github.io/R_Text_processing_tutorials/R/tutorial_03.html
 
 
