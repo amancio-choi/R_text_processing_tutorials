@@ -19,3 +19,4 @@
 
 
 ##### Part 2: R을 이용한 텍스트 파일 처리(task 중심)
+- 문수현 선생님 요청 건 <https://amancio-choi.github.io/R_Text_processing_tutorials/R/R_20230314_문수현선생님.html><br>
