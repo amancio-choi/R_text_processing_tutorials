@@ -1,4 +1,4 @@
-# R_text_processing_tutoorials
+# R_text_processing_tutorials
 
 ## Text processing tutorial
 
@@ -9,7 +9,7 @@
 
 ##### Part 1: R을 이용한 텍스트 파일 처리 기초<br>
 - tutorial_01: R 환경 및 기초<br>
-[튜토리얼] <https://amancio-choi.github.io/R_text_processing_tutorials/R/R_tutorial_01_updated.html><br>
+[튜토리얼] <https://amancio-choi.github.io/R_text_processing_tutorials/R/R_tutorial_01.html><br>
 
 - tutorial_02: R로 텍스트 파일 읽고 쓰기, 정규식 활용<br>
 [튜토리얼] <https://amancio-choi.github.io/R_Text_processing_tutorials/R/R_tutorial_02.html><br>
